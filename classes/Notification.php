@@ -26,22 +26,51 @@ class Notification {
         }
     }
 
-//    public function assignBatch($year){
-//        $student = array();
-//        $student = $this->_Ndb->getAll('SELECT id', 'users', '$year');
-//
-//
-//    }
+    public function getRepeatStudent(){
+        //$field = (is_numeric($user)) ? 'id' : 'username';
+        $data = $this->_Ndb->getID('users', array('year' , '=' , 1))->results();
+
+        return $data;
+    }
 
     public function getBatch($year){
             //$field = (is_numeric($user)) ? 'id' : 'username';
          $data = $this->_Ndb->getID('users', array('year' , '=' , $year))->results();
+
         return $data;
     }
 
     public function assignBatch($fields=array()){
         if(!$this->_Ndb->insert('user_notification', $fields)){
-            throw new Exception('There was a problem in connection');
+            //throw new Exception('There was a problem in connection');
+            //print_r($fields);
+            $x = $fields['uID'];
+            $tmpUser = new User();
+            $tmpUser->find($x);
+            echo "This notification has been already send to " . $tmpUser->data()->username . "<br />";
+        }
+    }
+
+    public function checkWithUser($userID, $notifyID){
+        $data1 = $this->_Ndb->query('SELECT * FROM user_notification WHERE uID = ? AND nID = ?',array($userID, $notifyID));
+//        $data2 = $this->_Ndb->get('user_notification', array('nID' , '=' , $notifyID))->count();
+        if($data1){
+            return false;
+        }
+        return true;
+    }
+
+    public function sendNotification($notif,$userID,$myNotifyID ) {
+        if($notif->checkWithUser($userID, $myNotifyID)){
+            $notif->assignBatch(array(
+                'nID' => $myNotifyID,
+                'uID' => $userID
+            ));
+            //continue;
+        } else {
+            $tmpUser = new User();
+            $tmpUser->find($userID);
+            echo "This notification has been already send to " . $tmpUser->data()->username . "<br />";
         }
     }
 

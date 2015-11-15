@@ -82,7 +82,8 @@ if ($user->hasPermission('admin')) {
         echo "<td width=5% align=center bgcolor=#E6E6E6>".$t->datetime."</td>";
         $_SESSION['dID'] = $t->nID;
         echo "<td width=5% align=center bgcolor=#E6E6E6 data-color='red'><a href=notif_delete.php>Clear</a><BR>
-                                                        <a href=notif_assign_users.php>Assign users</a>
+                                                        <a href=notif_assign_users.php>Assign users</a><BR>
+                                                        <a href='notif_remove_users.php'> Disallow users</a>
         </td>";
         echo "</tr>";
     }

@@ -11,50 +11,122 @@ $notif = new Notification();
 if(!$user->isLoggedIn()){
     Redirect::to('index.php');
 }
-$myID = $_SESSION['dID'];
+$myNotifyID = $_SESSION['dID'];
 //check for admin
-if ($user->hasPermission('admin')) {
-//code here
+if (!$user->hasPermission('admin')) {
+    Redirect::to('index.php');
+}
+if(Input::get('Submit-batch')) {
     if(Input::exists()){
-        if(Token::check(Input::get('token'))) {
-            $Syear = Input::get('Nyear');
+        $Syear = Input::get('Nyear');
+        //print_r($Syear);
+        foreach($Syear as $y){
+            $dataSt = $notif->getBatch($y);
             //print_r($Syear);
-            foreach($Syear as $y){
-                $dataSt = $notif->getBatch($y);
-                foreach($dataSt as $d){
-                    echo $d->id.'<br/>';
+//            print_r($dataSt);
+            foreach($dataSt as $d){
+                $userid = $d->id;
+                //$notif->sendNotification($notif,$userid,$myNotifyID);
+                if(!$notif->checkWithUser($d->id, $myNotifyID)){
                     $notif->assignBatch(array(
-                       'nID' => $myID,
-                       'uID' => $d->id
+                       'nID' => $myNotifyID,
+                       'uID' => $userid
                     ));
+                } else {
+                    $tmpUser = new User();
+                    $tmpUser->find($d->id);
+                    echo "This notification has been already send to " . $tmpUser->data()->username . "<br />";
+//                    continue;
                 }
             }
         }
     }
-} else {
-    Redirect::to('index.php');
 }
 
+if(isset($_GET['user'])){
+    $searchUserID = $_GET['user'];
+    if(!$notif->checkWithUser($searchUserID, $myNotifyID)){
+        $notif->assignBatch(array(
+            'nID' => $myNotifyID,
+            'uID' => $searchUserID
+        ));
+    } else {
+        $tmpUser = new User();
+        $tmpUser->find($searchUserID);
+        echo "This notification has been already send to " . $tmpUser->data()->username . "<br />";
+//                    continue;
+    }
+}
+
+if(Input::get('Submit-repeat-all-student')){
+    if(Input::exists()){
+        $dataSt = $notif->getRepeatStudent();
+        foreach($dataSt as $d){
+            $userid = $d->id;
+            //$notif->sendNotification($notif,$userid,$myNotifyID);
+            if(!$notif->checkWithUser($d->id, $myNotifyID)){
+                $notif->assignBatch(array(
+                    'nID' => $myNotifyID,
+                    'uID' => $userid
+                ));
+            } else {
+                $tmpUser = new User();
+                $tmpUser->find($d->id);
+                echo "This notification has been already send to " . $tmpUser->data()->username . "<br />";
+//                    continue;
+            }
+        }
+    }
+}
+
+
 ?>
-<form action="" method="post">
-
-    <label for="text1">Send to<br></label>
-        <UL type="DISC">
-            <li>Year wise:</li>
-                <UL type="NONE">
-                    <li><input type="checkbox" name="Nyear[]" value="<? echo escape('1')?>" /> First Years <br></li>
-                    <li><input type="checkbox" name="Nyear[]" value="<? echo escape('2')?>" /> Second Years <br></li>
-                    <li><input type="checkbox" name="Nyear[]" value="<? echo escape('3')?>" /> Third Years <br></li>
-                    <li><input type="checkbox" name="Nyear[]" value="<? echo escape('4')?>" /> Fourth Years <br></li>
-                </UL>
+        <label for="text1">Send to<br></label>
+        <form name="batch" action="" method="post">
+            <h4> Year wise </h4>
+            <li><input type="checkbox" name="Nyear[]" value="<? echo escape('1')?>" /> First Years <br></li>
+            <li><input type="checkbox" name="Nyear[]" value="<? echo escape('2')?>" /> Second Years <br></li>
+            <li><input type="checkbox" name="Nyear[]" value="<? echo escape('3')?>" /> Third Years <br></li>
+            <li><input type="checkbox" name="Nyear[]" value="<? echo escape('4')?>" /> Fourth Years <br></li>
+            <input type = "hidden" name="token_batch" value="<?php echo Token::generate(); ?>">
+            <input class="btn btn-default" type="submit" name="Submit-batch" value="Submit" />
             <hr>
+        </form>
 
-            <li>Selected students: </li>
 
-        </UL>
+        <form name="repeat-all-student" action="" method="post">
+            <h4>All repeat students: </h4>
+            <li><input type="checkbox" name="repStu" value="<? echo escape('1')?>" />All repeat students<br></li>
+            <input type = "hidden" name="token_repeat-all" value="<?php echo Token::generate(); ?>">
+            <input class="btn btn-default" type="submit" name="Submit-repeat-all-student" value="Submit" />
+        </form>
 
-    <div>
-        <input class="btn btn-default" type="submit" name="Submit" value="Submit" />
-        <input type = "hidden" name="token" value="<?php echo Token::generate(); ?>">
-    </div>
-</form>
+        <form name="selected-student" action="" method="post">
+            <h4>Selected student</h4>
+            <div class="jumbotron col-lg-6 col-lg-offset-1">
+                <div class="col-lg-6">
+                    <input class="form-control" type="text" id="search" placeholder="Enter username to search" autocomplete="off" name="search" value="<?php echo Input::get('search')?>" onkeyup="autoSuggest('result','search_for_notification.php');"  />
+                    <div>
+                        <ul id="result" class="nav navbar" ></ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <?php
+                    if(isset($msg)){
+                        echo "<div class='alert alert-danger'>$msg</div>";
+                    }
+                    ?>
+                </div>
+            </div>
+            <input type = "hidden" name="token_selected_student" value="<?php echo Token::generate(); ?>">
+        </form>
+
+<?php
+require 'headerScript.php';
+?>
+<?php
+if(isset($_POST['user'])){
+    $item = $_POST['user'];
+    $notif->sendNotification($notif,$item,$myNotifyID);
+}
+?>
