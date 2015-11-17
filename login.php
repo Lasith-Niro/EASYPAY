@@ -6,7 +6,23 @@
  * Time: 1:43 PM
  */
 require_once 'core/init.php';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login | page</title>
+    <?php include 'headerScript.php'?>
+</head>
 
+<body>
+<div>
+    <?php
+    include "header.php";
+    ?>
+</div>
+
+<div class="container-fluid backgroundImg">
+    <?
 
 //$_SESSION['uname'] = Input::get('username');
 if(Session::exists('home')){
@@ -66,30 +82,6 @@ if(Input::exists()){
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <header></header>
-    <title>Login | page</title>
-<!--    <link rel="stylesheet" href=--><?php //echo $temp_var?><!-- >-->
-    <link href="css/customCss.css" rel="stylesheet">
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
-</head>
-<body>
-<div>
-    <?php
-    include "header.php";
-    ?>
-</div>
-
-<div class="container-fluid backgroundImg">
     <br>
     <div id="loginForm" class="jumbotron col-lg-4 col-lg-offset-4 ">
         <img class="col-lg-offset-4" src="images/ucsc.png" height="100px">
@@ -98,7 +90,6 @@ if(Input::exists()){
                 <h3 id="signin"><strong>Sign in</strong></h3>
             </div>
 
-<!--            <img align="center" id="ucscLogo" src="images/ucsc.png" height="100px"/>-->
             <div class="gap">
                 <label>Username</label><br>
                 <input class="form-control" required id="username" type="text" name="username" autocomplete="off" placeholder="Enter username" size="25" maxlength="20"/>
