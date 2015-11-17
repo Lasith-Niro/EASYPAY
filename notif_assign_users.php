@@ -8,6 +8,7 @@
 require_once 'core/init.php';
 $user = new User();
 $notif = new Notification();
+$send_date = date("d/m/y h:i:s");
 if(!$user->isLoggedIn()){
     Redirect::to('index.php');
 }
@@ -30,7 +31,8 @@ if(Input::get('Submit-batch')) {
                 if(!$notif->checkWithUser($d->id, $myNotifyID)){
                     $notif->assignBatch(array(
                        'nID' => $myNotifyID,
-                       'uID' => $userid
+                       'uID' => $userid ,
+                       'send_date' => $send_date
                     ));
                 } else {
                     $tmpUser = new User();
@@ -48,7 +50,8 @@ if(isset($_GET['user'])){
     if(!$notif->checkWithUser($searchUserID, $myNotifyID)){
         $notif->assignBatch(array(
             'nID' => $myNotifyID,
-            'uID' => $searchUserID
+            'uID' => $searchUserID,
+            'send_date' => $send_date
         ));
     } else {
         $tmpUser = new User();
@@ -67,7 +70,8 @@ if(Input::get('Submit-repeat-all-student')){
             if(!$notif->checkWithUser($d->id, $myNotifyID)){
                 $notif->assignBatch(array(
                     'nID' => $myNotifyID,
-                    'uID' => $userid
+                    'uID' => $userid,
+                    'send_date' => $send_date
                 ));
             } else {
                 $tmpUser = new User();
@@ -120,13 +124,13 @@ if(Input::get('Submit-repeat-all-student')){
             </div>
             <input type = "hidden" name="token_selected_student" value="<?php echo Token::generate(); ?>">
         </form>
-
+<a href="notif_main_forum.php" > Back to notification panel</a>
 <?php
 require 'headerScript.php';
 ?>
 <?php
 if(isset($_POST['user'])){
     $item = $_POST['user'];
-    $notif->sendNotification($notif,$item,$myNotifyID);
+    $notif->sendNotification($notif,$item,$myNotifyID,$send_date);
 }
 ?>

@@ -26,6 +26,13 @@ class Notification {
         }
     }
 
+    public function disAllowUser($userID, $notifyID){
+        if(!$this->_Ndb->query('DELETE FROM user_notification WHERE nID = ? AND uID = ?',array($notifyID,$userID))){
+            throw new Exception('There was a problem in connection');
+        }
+
+    }
+
     public function getRepeatStudent(){
         //$field = (is_numeric($user)) ? 'id' : 'username';
         $data = $this->_Ndb->getID('users', array('year' , '=' , 1))->results();
@@ -60,11 +67,12 @@ class Notification {
         return true;
     }
 
-    public function sendNotification($notif,$userID,$myNotifyID ) {
+    public function sendNotification($notif,$userID,$myNotifyID,$send_date ) {
         if($notif->checkWithUser($userID, $myNotifyID)){
             $notif->assignBatch(array(
                 'nID' => $myNotifyID,
-                'uID' => $userID
+                'uID' => $userID,
+                'send_date' => $send_date
             ));
             //continue;
         } else {
@@ -72,6 +80,20 @@ class Notification {
             $tmpUser->find($userID);
             echo "This notification has been already send to " . $tmpUser->data()->username . "<br />";
         }
+    }
+
+    public function find($notification = null){
+        if($notification){
+            $field = (is_numeric($notification)) ? 'nID' : 'topic';
+//            $data = $this->_db->get('users', array($field, '=', $user));
+            $data = $this->_Ndb->get('notification', array($field, '=', $notification));
+
+            if($data->count()){
+                $this->_Ndata = $data->first();
+                return true;
+            }
+        }
+        return false;
     }
 
     public function outNotifications($uID){

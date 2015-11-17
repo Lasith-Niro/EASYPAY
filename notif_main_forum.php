@@ -44,6 +44,7 @@ include "adminSidebar.php";
 
 
 $user = new User();
+$notificate = new Notification();
 if(!$user->isLoggedIn()){
     Redirect::to('index.php');
 }
@@ -80,13 +81,23 @@ if ($user->hasPermission('admin')) {
         echo "<td width=10% align=center bgcolor=#E6E6E6>".$t->topic."</td>";
         echo "<td width=20% align=center bgcolor=#E6E6E6>".$t->detail."</td>";
         echo "<td width=5% align=center bgcolor=#E6E6E6>".$t->datetime."</td>";
-        $_SESSION['dID'] = $t->nID;
-        echo "<td width=5% align=center bgcolor=#E6E6E6 data-color='red'><a href=notif_delete.php>Clear</a><BR>
-                                                        <a href=notif_assign_users.php>Assign users</a><BR>
-                                                        <a href='notif_remove_users.php'> Disallow users</a>
-        </td>";
-        echo "</tr>";
+        echo '<td width=10% align=center bgcolor=#E6E6E6> <form method="post"> <input type="submit" name="delete" value="Delete">
+ <input type="hidden" name="vin" value="'.$t->nID.'">
+ </form></td></tr>';
+
+//        $_SESSION['dID'] = $t->nID;
+//        echo "<td width=5% align=center bgcolor=#E6E6E6 data-color='red'><a href=notif_delete.php>Clear</a><BR>
+//                                                                         <a href=notif_assign_users.php>Assign users</a><BR>
+//                                                                         <a href='notif_remove_users.php'> Disallow users</a>
+//        </td>";
+//        echo "</tr>";
     }
+    }
+    if(isset($_REQUEST['delete']))
+    {
+        $vin = $_POST['vin'];
+        $notificate->deleteNotification($vin);
+        //echo '<script>parent.window.location.reload();</script>';
     }
     ?>
     </tbody>

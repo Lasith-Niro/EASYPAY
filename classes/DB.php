@@ -8,7 +8,8 @@
 
 class DB{
     private static $_instance = null;
-    private $_pdo,
+    private $_pdo_easypay,
+            $_pdo_academic,
             $_query,
             $_error = false,
             $_results,
@@ -16,15 +17,12 @@ class DB{
 
     private function __construct() {
         try {
-            $this->_pdo = new PDO('mysql:host=' . Config::get('mysql/host') . ';dbname=' . Config::get('mysql/db'), Config::get('mysql/username'), Config::get('mysql/password'));
+            $this->_pdo_easypay = new PDO('mysql:host=' . Config::get('mysql/host') . ';dbname=' . Config::get('mysql/db'), Config::get('mysql/username'), Config::get('mysql/password'));
+            $this->_pdo_academic = new PDO('mysql:host=' . Config::get('mysql/host') . ';dbname=' . Config::get('mysql/db2'), Config::get('mysql/username'), Config::get('mysql/password'));
 //            echo "connected";
         } catch (PDOException $e) {
             die($e->getMessage());
         }
-    }
-
-    public function connect2db($db1, $db2) {
-
     }
 
     public static function getInstance() {
@@ -36,7 +34,27 @@ class DB{
 
     public function query($sql, $parms = array()){
         $this->_error = false;
-        if ($this->_query = $this->_pdo->prepare($sql)) {
+        if ($this->_query = $this->_pdo_easypay->prepare($sql)) {
+            $x = 1;
+            if (count($parms)) {
+                foreach ($parms as $param) {
+                    $this->_query->bindValue($x, $param);
+                    $x++;
+                }
+            }
+            if ($this->_query->execute()) {
+                $this->_results = $this->_query->fetchAll(PDO::FETCH_OBJ);
+                $this->_count = $this->_query->rowCount();
+            } else {
+                $this->_error = true;
+            }
+        }
+        return $this;
+    }
+    //$_pdo_academic
+    public function query2($sql, $parms = array()){
+        $this->_error = false;
+        if ($this->_query = $this->_pdo_academic->prepare($sql)) {
             $x = 1;
             if (count($parms)) {
                 foreach ($parms as $param) {
