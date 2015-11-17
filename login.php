@@ -6,7 +6,7 @@
  * Time: 1:43 PM
  */
 require_once 'core/init.php';
-require 'browser/browserconnect.php';
+
 
 //$_SESSION['uname'] = Input::get('username');
 if(Session::exists('home')){
@@ -62,18 +62,6 @@ if(Input::exists()){
             }
         }
     }
-}
-$ua=getBrowser();
-$yourbrowser= $ua['name'];
-$temp_var;
-if ($yourbrowser=="Google Chrome"){
-    $temp_var="css/loginCSSChrome.css";
-}
-elseif($yourbrowser=="Mozilla Firefox"){
-    $temp_var="css/loginCSSFirefox.css";
-}
-elseif($yourbrowser=="Internet Explorer"){
-    $temp_var="css/loginCSSInternetExplorer.css";
 }
 
 ?>
